@@ -1,2 +1,2 @@
 # Tasks
-Aplicativo desenvolvido em formato Hibrido com React Native
+Aplicativo de Tarefas desenvolvido com React Native
