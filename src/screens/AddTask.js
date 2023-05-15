@@ -14,9 +14,10 @@ const AddTask = props => {
 
     const save = ()=>{
         const newTask = {...state}
-        if(props.onSave){
-            props.onSave(newTask)
-        }
+        console.log(newTask.desc)
+        props.onSave && props.onSave(newTask)
+        setState({...initialState});
+        
     }
 
     const getDateTimePiker = () => {
@@ -79,7 +80,7 @@ const AddTask = props => {
                 {getDateTimePiker()}
                 <View style={styles.botoes}>
                     <TouchableOpacity onPress={() => props.onCancel()}><Text style={styles.botao}>Cancelar</Text></TouchableOpacity>
-                    <TouchableOpacity><Text style={styles.botao}>Salvar</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=>save()}><Text style={styles.botao}>Salvar</Text></TouchableOpacity>
 
                 </View>
             </View>

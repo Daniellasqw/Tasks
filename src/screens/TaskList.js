@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text, View, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { Text, View, ImageBackground, StyleSheet, FlatList, TouchableOpacity, Platform, Alert } from 'react-native';
 import today1 from '../../assets/imgs/today.jpg';
 import moment from 'moment';
 import 'moment/locale/pt-br'
@@ -9,11 +9,11 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import AddTask from './AddTask';
 
 export default function TaskList() {
-  useEffect(()=>{
+  useEffect(() => {
     filterTasks()
-  },[])
+  }, [task])
 
-  const [visibleModal,setVisibleModal] = useState(false)
+  const [visibleModal, setVisibleModal] = useState(false)
   const [task, setTask] = useState([
     {
       id: Math.random(),
@@ -30,22 +30,22 @@ export default function TaskList() {
 
     }
   ])
-  const [visibleTasks, setVisibleTasks ] = useState([])
+  const [visibleTasks, setVisibleTasks] = useState([])
   const [showDoneTasks, setShowDoneTasks] = useState(true)
 
   const toggleFilter = () => {
     console.log(showDoneTasks)
     setShowDoneTasks(!showDoneTasks)
-    filterTasks()
+    // filterTasks()
+    
   }
 
   const filterTasks = () => {
     let visibleTask = null
-    if (showDoneTasks ) {
+    if (showDoneTasks) {
       visibleTask = [...task]
     } else {
-      const pending = task => task.doneAt === null
-      visibleTask = visibleTasks.filter(pending)
+      visibleTask = visibleTasks.filter(task => task.doneAt === null)
     }
     setVisibleTasks(visibleTask)
   }
@@ -60,6 +60,31 @@ export default function TaskList() {
     setTask(tasks)
     filterTasks()
   }
+  const addTask = newTask => {
+    if (!newTask.desc) {
+      Alert.alert('Dados Inválidos', 'Descrição não informada!')
+      return
+    }
+    const tasks = [...task];
+    tasks.push({
+      id: Math.random(),
+      desc: newTask.desc,
+      estimada: newTask.date,
+      doneAt: null,
+    })
+    setTask(tasks);
+    setVisibleModal(false)
+    filterTasks()
+
+
+  }
+  const deleteTask = id => {
+    const tasks = task.filter(task => task.id !== id)
+    setTask(tasks);
+    filterTasks();
+   
+
+  }
 
   const today = moment().locale('pt-br').format('ddd, D [de] MMMM')
   return (
@@ -68,7 +93,7 @@ export default function TaskList() {
         <View style={styles.titleBar}>
           <View style={styles.IconBar}>
             <TouchableOpacity onPress={toggleFilter}>
-              <Icon name={!showDoneTasks ==true ? 'eye' : 'eye-slash'} size={20} color={commonStyles.colors.secondary} />
+              <Icon name={showDoneTasks ? 'eye' : 'eye-slash'} size={20} color={commonStyles.colors.secondary} />
             </TouchableOpacity>
 
           </View>
@@ -81,19 +106,20 @@ export default function TaskList() {
         <FlatList
           data={visibleTasks}
           keyExtractor={item => `${item.id}`}
-          renderItem={({ item }) => <Task {...item} toggleTask={toggleTask} />}
+          renderItem={({ item }) => <Task {...item} toggleTask={toggleTask} onDelete={deleteTask} />}
         />
       </View>
-      <TouchableOpacity style={styles.addBotao} onPress={()=>setVisibleModal(true)} activeOpacity={0.7}>
-        <Icon  name="plus" size={20} color={commonStyles.colors.secondary}/>
+      <TouchableOpacity style={styles.addBotao} onPress={() => setVisibleModal(true)} activeOpacity={0.7}>
+        <Icon name="plus" size={20} color={commonStyles.colors.secondary} />
       </TouchableOpacity>
-      <AddTask visible ={visibleModal} onCancel = {()=>setVisibleModal(false)}/>
+      <AddTask visible={visibleModal} onCancel={() => setVisibleModal(false)} onSave={addTask} />
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    backgroundColor: "#fff"
   },
   background: {
     flex: 3
@@ -125,15 +151,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     justifyContent: 'flex-end',
   },
-  addBotao:{
-    position:"absolute",
-    right:30,
-    bottom:30,
-    width:50,
-    height:50,
-    borderRadius:25,
-    backgroundColor:commonStyles.colors.today,
-    justifyContent:"center",
-    alignItems:'center'
+  addBotao: {
+    position: "absolute",
+    right: 30,
+    bottom: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: commonStyles.colors.today,
+    justifyContent: "center",
+    alignItems: 'center'
   }
 })
