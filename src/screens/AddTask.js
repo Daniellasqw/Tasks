@@ -69,6 +69,7 @@ const AddTask = props => {
             <View style={styles.container}>
                 <Text style={styles.header}>Nova Tarefa</Text>
                 <TextInput style={styles.input}
+                placeholderTextColor = "grey"
                     placeholder="Informe a Descrição..."
                     onChangeText={desc => {
                         const desc1 = { ...state }
@@ -116,12 +117,12 @@ const styles = StyleSheet.create({
     },
     input: {
         fontFamily: commonStyles.fontFamily,
-
         height: 40,
         margin: 15,
         backgroundColor: "#fff",
         borderWidth: 1,
-        borderColor: "#e3e3e3", borderRadius: 6
+        borderColor: "#e3e3e3", borderRadius: 6,
+        color:"#000"
     },
     botoes: {
         flexDirection: "row",
@@ -136,7 +137,8 @@ const styles = StyleSheet.create({
     date:{
         fontFamily:commonStyles.fontFamily,
         fontSize:20,
-        marginLeft:15
+        marginLeft:15,
+        color:"#000"
     }
 
 });

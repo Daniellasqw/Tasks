@@ -32,7 +32,6 @@ export default props => {
             </View>
         )
     }
-
     return (
         <GestureHandlerRootView>
             <Swipeable 

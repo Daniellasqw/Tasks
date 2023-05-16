@@ -4,54 +4,57 @@ import today1 from '../../assets/imgs/today.jpg';
 import moment from 'moment';
 import 'moment/locale/pt-br'
 import commonStyles from './commonStyles';
+import AsyncStorage from"@react-native-async-storage/async-storage"
 import Task from '../components/Task';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AddTask from './AddTask';
 
 export default function TaskList() {
-  useEffect(() => {
-    filterTasks()
-  }, [task])
+  useEffect(  () => {
+    const render = async () => {
+      const stateString =  await  AsyncStorage.getItem("tasksState")
+      const state2 = JSON.parse(stateString);
+      setTask(state2.task)
+      setVisibleTasks(state2.visibleTasks)
+      setShowDoneTasks(state2.showDoneTasks)
+    }
+    render()
+    filterTasks();
+    console.log(showDoneTasks)
+    
+  }, [])
+
 
   const [visibleModal, setVisibleModal] = useState(false)
-  const [task, setTask] = useState([
-    {
-      id: Math.random(),
-      desc: "Comprar Livro de React Native",
-      estimada: new Date(),
-      doneAt: new Date(),
-
-    },
-    {
-      id: Math.random(),
-      desc: "Comprar Livro de PHP",
-      estimada: new Date(),
-      doneAt: null,
-
-    }
-  ])
+  const [task, setTask] = useState([]);
   const [visibleTasks, setVisibleTasks] = useState([])
-  const [showDoneTasks, setShowDoneTasks] = useState(true)
+  const [showDoneTasks, setShowDoneTasks] = useState(false)
 
   const toggleFilter = () => {
-    console.log(showDoneTasks)
     setShowDoneTasks(!showDoneTasks)
-    // filterTasks()
-    
+
+    filterTasks()
   }
 
   const filterTasks = () => {
+    console.log(showDoneTasks)
     let visibleTask = null
     if (showDoneTasks) {
       visibleTask = [...task]
     } else {
-      visibleTask = visibleTasks.filter(task => task.doneAt === null)
+      visibleTask = task.filter(task => task.doneAt === null)
     }
     setVisibleTasks(visibleTask)
+    const state = {
+      task:task,
+      visibleTasks:task,
+      showDoneTasks:showDoneTasks
+    }
+    AsyncStorage.setItem('tasksState',JSON.stringify(state))
   }
 
   const toggleTask = (id) => {
-    const tasks = [...task]
+    const tasks = task
     tasks.forEach(tasks => {
       if (tasks.id === id) {
         tasks.doneAt = tasks.doneAt ? null : new Date()
@@ -72,9 +75,12 @@ export default function TaskList() {
       estimada: newTask.date,
       doneAt: null,
     })
+
     setTask(tasks);
-    setVisibleModal(false)
-    filterTasks()
+    filterTasks();
+    setVisibleModal(false);
+
+   
 
 
   }
@@ -93,7 +99,7 @@ export default function TaskList() {
         <View style={styles.titleBar}>
           <View style={styles.IconBar}>
             <TouchableOpacity onPress={toggleFilter}>
-              <Icon name={showDoneTasks ? 'eye' : 'eye-slash'} size={20} color={commonStyles.colors.secondary} />
+                <Icon name={showDoneTasks ? 'eye': 'eye-slash'} size={20} color={commonStyles.colors.secondary} />
             </TouchableOpacity>
 
           </View>
