@@ -11,19 +11,27 @@ import AddTask from './AddTask';
 
 export default function TaskList() {
   useEffect(  () => {
-    const render = async () => {
-      const stateString =  await  AsyncStorage.getItem("tasksState")
-      const state2 = JSON.parse(stateString);
-      setTask(state2.task)
-      setVisibleTasks(state2.visibleTasks)
-      setShowDoneTasks(state2.showDoneTasks)
-    }
-    render()
-    filterTasks();
-    console.log(showDoneTasks)
-    
-  }, [])
-
+    (async function() {
+      try {
+        const stateString =  await  AsyncStorage.getItem("tasksState")
+        const state2 = JSON.parse(stateString);
+        setTask(state2.task);
+        setVisibleTasks(state2.visibleTasks)
+        setShowDoneTasks(state2.showDoneTasks)
+        filterTasks();
+        console.log(state2.visibleTasks)
+      } catch (e) {
+          console.error(e);
+      }
+  })();
+      // const stateString =  await  AsyncStorage.getItem("tasksState")
+      // const state2 = JSON.parse(stateString);
+      // setTask(state2.task)
+      // setVisibleTasks(state2.visibleTasks)
+      // setShowDoneTasks(state2.showDoneTasks)
+      // filterTasks();
+      // console.log(state2.visibleTasks)
+  },[])
 
   const [visibleModal, setVisibleModal] = useState(false)
   const [task, setTask] = useState([]);
@@ -32,7 +40,6 @@ export default function TaskList() {
 
   const toggleFilter = () => {
     setShowDoneTasks(!showDoneTasks)
-
     filterTasks()
   }
 
